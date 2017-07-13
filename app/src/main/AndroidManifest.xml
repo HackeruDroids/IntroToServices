@@ -2,7 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="hackeru.edu.introtoservices">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!--revive the service if the device is reboot-->
+
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <!--for notifications...-->
 
     <application
         android:allowBackup="true"
@@ -11,7 +17,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -21,11 +26,28 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-         <service
+        <service
             android:name=".NotificationService"
             android:enabled="true"
-            android:exported="true"/>
+            android:exported="true" />
+
+        <!--exported false-> only my app can open this service-->
+        <!--implicit intents are acting on the intent filter-->
+        <service
+            android:name=".MyJobService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+            </intent-filter>
+        </service>
+
+
+        <!--<receiver android:name="BootReceiver">-->
+        <!--<intent-filter>-->
+        <!--<action android:name="android.intent.action.BOOT_COMPLETED"/>-->
+        <!--</intent-filter>-->
+        <!--</receiver>-->
+
     </application>
 
 </manifest>

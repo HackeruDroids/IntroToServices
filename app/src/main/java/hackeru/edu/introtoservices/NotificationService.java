@@ -26,6 +26,7 @@ import java.net.URL;
 public class NotificationService extends IntentService {
     public static final String TAG = "NotificationService";
 
+
     public NotificationService() {
         //The name is used for debugging purposes
         //super(NotificationService.class.getName());
@@ -33,8 +34,19 @@ public class NotificationService extends IntentService {
         super(TAG);
     }
 
+    //a method that is executed when the service is started.
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
+        while (true) {
+            String result = gotoInternetFetchString();
+            //shout the result:
+            shout(result);
+            long sleepTime = java.util.concurrent.TimeUnit.MINUTES.toMillis(1);
+            try {Thread.sleep(sleepTime);} catch (InterruptedException ignored) {}
+        }
+    }
+
+    private String gotoInternetFetchString() {
         //take the mission here: a starting point for the service
         //here we receive the intent that started the service
         /*
@@ -43,7 +55,7 @@ public class NotificationService extends IntentService {
         startXXX
         startService(intent);
         */
-
+        StringBuilder result = new StringBuilder();
         //A Service must not provide UI:
         //a Service may send push Notification
         BufferedReader reader = null;
@@ -53,15 +65,13 @@ public class NotificationService extends IntentService {
             con = (HttpURLConnection) url.openConnection();
             InputStream in = con.getInputStream();
             reader = new BufferedReader(new InputStreamReader(in));
-            StringBuilder result = new StringBuilder();
+
             String line = null;
 
             while ((line = reader.readLine()) != null) {
                 result.append(line).append("\n");
             }
             Log.d(TAG, "onHandleIntent: " + result);
-            //shout the result:
-            shout(result.toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {//3.0 alpha-beta-> JAVA 8
@@ -78,8 +88,10 @@ public class NotificationService extends IntentService {
                 }
             }
         }
+        return result.toString();
     }
 
+    //report the job result:
     private void shout(String s) {
         //1) LocalBroadcastManager
         LocalBroadcastManager mgr = LocalBroadcastManager.getInstance(this/*Service is a context*/);
